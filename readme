@@ -1,0 +1,29 @@
+1.首先记录CPU的使用情况
+
+	perf record -e cpu-clock -g -p 20000 或者./t1
+实例：
+	perf record -F 99 -p 13204 -g -- sleep 30
+	perf record表示记录，-F 99表示每秒99次，-p 13204是进程号，即对哪个进程进行分析，-g表示记录调用栈，sleep 30则是持续30秒
+
+perf stat对全局性能进行统计；
+perf top可以实时查看当前系统进程函数占用率情况；
+pref record记录信息到perf.data；
+perf report生成报告
+
+2.使用 perf script 工具对 perf.data 进行解析
+
+	perf script -i perf.data &> perf.unfold
+
+3.使用 Flame Graph 工具将 perf.unfold 中的符号折叠 //生成脚本文件
+
+	FlameGraph/stackcollapse-perf.pl perf.unfold &> perf.folded
+
+4.使用 Flame Graph 工具将 perf.folded 生成 svg 火焰图
+
+	FlameGraph/flamegraph.pl perf.folded > perf.svg
+
+
+为了便于阅读，perf record 命令可以统计每个调用栈出现的百分比，然后从高到低排列
+	perf report -n --stdio
+
+
